@@ -20,7 +20,7 @@
     "zendesk unified sdkv2"
   ],
   "homepage": "https://github.com/pagopa/io-react-native-zendesk.git",
-  "author": "forked by PagoPA S.p.A - origina author @Saranshmalik",
+  "author": "forked by PagoPA S.p.A - original author @Saranshmalik",
   "license": "MIT",
   "peerDependencies": {
     "react": "~16.11.0",
