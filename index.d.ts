@@ -1,4 +1,4 @@
-declare module 'react-native-zendesk-v2' {
+declare module 'io-react-native-zendesk' {
 
   // function to display chat box
   export function startChat(chatOptions: ChatOptions): void;
