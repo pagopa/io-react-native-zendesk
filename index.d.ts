@@ -52,9 +52,9 @@ declare module 'io-react-native-zendesk' {
 
   interface UserInfo {
     // user's name
-    name: string
+    name?: string
     // user's email
-    email: string
+    email?: string
     // user's phone
     phone?: number
     // department to redirect the chat
@@ -69,9 +69,9 @@ declare module 'io-react-native-zendesk' {
 
   interface AnonymousIdentity {
     // user's name
-    name: string
+    name?: string
     // user's email
-    email: string
+    email?: string
   }
 
 }
