@@ -147,10 +147,19 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       Identity identity = new JwtIdentity(token);
       Zendesk.INSTANCE.setIdentity(identity);
     } else {
-      String name = options.getString("name");
-      String email = options.getString("email");
-      Identity identity = new AnonymousIdentity.Builder()
-        .withNameIdentifier(name).withEmailIdentifier(email).build();
+      String name = getString(options,"name");
+      String email = getString(options,"email");
+
+      AnonymousIdentity.Builder builder = new AnonymousIdentity.Builder();
+
+      if(name != null){
+          builder.withNameIdentifier(name);
+      }
+      if(email != null){
+          builder.withEmailIdentifier(email);
+      }
+
+      Identity identity = builder.build();
       Zendesk.INSTANCE.setIdentity(identity);
     }
     checkIdentity();
