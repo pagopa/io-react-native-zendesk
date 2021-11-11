@@ -50,11 +50,7 @@ declare module 'io-react-native-zendesk' {
     url: string,
   }
 
-  interface UserInfo {
-    // user's name
-    name?: string
-    // user's email
-    email?: string
+  interface UserInfo extends AnonymousIdentity{
     // user's phone
     phone?: number
     // department to redirect the chat
