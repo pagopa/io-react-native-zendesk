@@ -18,8 +18,9 @@ Pod::Spec.new do |s|
   s.source_files   = 'ios/*.{h,m}'
 
   s.dependency 'React'
-  s.dependency 'ZendeskAnswerBotSDK'
-  s.dependency 'ZendeskSupportSDK', '~> 5.0.5'
-  s.dependency 'ZendeskChatSDK'
+  s.dependency 'ZendeskAnswerBotSDK', '~> 2.1.3'
+  s.dependency 'ZendeskSupportSDK', '~> 5.3.0'
+  s.dependency 'ZendeskChatSDK' '~> 2.11.1'
+  s.dependency 'ZendeskMessagingAPISDK', '~> 3.8.2'
   s.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 end
