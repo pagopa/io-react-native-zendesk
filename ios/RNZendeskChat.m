@@ -59,6 +59,14 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
   });
 }
 
+RCT_EXPORT_METHOD(openTicket) {
+  [self setVisitorInfo:options];
+
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [self openTicketFunction];
+  });
+}
+
 RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
   [self setVisitorInfo:options];
   dispatch_sync(dispatch_get_main_queue(), ^{
@@ -141,6 +149,17 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
     [topController presentViewController:navControl animated:YES completion:nil];
 }
+
+- (void) openTicket {
+    UIViewController *requestList = [ZDKRequestUi buildRequestUiWith:@[]];
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
+    [navControl pushViewController:requestList animated:YES];
+    [topController presentViewController:navControl animated:YES completion:nil];
+  }
 
 - (void) startChatFunction:(NSDictionary *)options {
     ZDKMessagingConfiguration *messagingConfiguration = [[ZDKMessagingConfiguration alloc] init];
