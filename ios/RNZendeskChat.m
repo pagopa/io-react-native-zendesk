@@ -60,9 +60,13 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
 }
 
 RCT_EXPORT_METHOD(openTicket) {
-
   dispatch_sync(dispatch_get_main_queue(), ^{
     [self openTicketFunction];
+  });
+}
+RCT_EXPORT_METHOD(showTickets) {
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [self showTicketsFunction];
   });
 }
 
@@ -150,13 +154,22 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
 }
 
 - (void) openTicketFunction {
-    UIViewController *requestList = [ZDKRequestUi buildRequestUiWith:@[]];
+    UIViewController *openTicketController = [ZDKRequestUi buildRequestUiWith:@[]];
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
-    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: requestList];
-    [navControl pushViewController:requestList animated:YES];
+    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: openTicketController];
+    [topController presentViewController:navControl animated:YES completion:nil];
+  }
+
+- (void) showTicketsFunction {
+    UIViewController *showTicketsController = [ZDKRequestUi buildRequestListWith:@[]];
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: showTicketsController];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
 
