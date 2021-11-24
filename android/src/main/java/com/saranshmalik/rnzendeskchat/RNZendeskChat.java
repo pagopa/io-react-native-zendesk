@@ -39,6 +39,7 @@ import zendesk.answerbot.AnswerBot;
 import zendesk.answerbot.AnswerBotEngine;
 import zendesk.support.SupportEngine;
 import zendesk.support.request.RequestActivity;
+import zendesk.support.requestlist.RequestListActivity;
 
 public class RNZendeskChat extends ReactContextBaseJavaModule {
 
