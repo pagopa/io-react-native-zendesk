@@ -15,6 +15,12 @@ declare module 'io-react-native-zendesk' {
   // function to display help center UI
   export function showHelpCenter(chatOptions: ChatOptions): void;
 
+  // function to open a ticket
+  export function openTicket(): void;
+
+  // function to shows all the tickets of the user
+  export function showTickets(): void;
+
   // function to set visitor info in chat
   export function setVisitorInfo(visitorInfo: UserInfo): void;
 

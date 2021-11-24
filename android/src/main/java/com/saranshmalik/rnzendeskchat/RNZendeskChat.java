@@ -39,6 +39,7 @@ import zendesk.answerbot.AnswerBot;
 import zendesk.answerbot.AnswerBotEngine;
 import zendesk.support.SupportEngine;
 import zendesk.support.request.RequestActivity;
+import zendesk.support.requestlist.RequestListActivity;
 
 public class RNZendeskChat extends ReactContextBaseJavaModule {
 
@@ -166,17 +167,25 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void openTicket(){
+      Activity activity = getCurrentActivity();
+
+      // Open a ticket
+      RequestActivity.builder().
+        withCustomFields(customFields).show(activity);
+  }
+
+  @ReactMethod
+  public void showTickets(){
+      Activity activity = getCurrentActivity();
+
+      // Show the user's tickets
+      RequestListActivity.builder().show(activity);
+  }
+
+  @ReactMethod
   public void showHelpCenter(ReadableMap options) {
     Activity activity = getCurrentActivity();
-    /*
-    // config must be passed as 2nd parameter to show method
-    List<CustomField> customFields = new ArrayList<>();
-    customFields.add(new CustomField(360028434358L, "testValoreDaApp"));
-    Configuration config = RequestActivity.builder()
-      .withCustomFields(customFields)
-      .withTags("tag1","tag2")
-      .config();
-     */
     Boolean withChat = getBoolean(options,"withChat");
     Boolean disableTicketCreation = getBoolean(options,"withChat");
     if (withChat) {
