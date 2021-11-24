@@ -60,7 +60,6 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
 }
 
 RCT_EXPORT_METHOD(openTicket) {
-  [self setVisitorInfo:options];
 
   dispatch_sync(dispatch_get_main_queue(), ^{
     [self openTicketFunction];
@@ -150,13 +149,13 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     [topController presentViewController:navControl animated:YES completion:nil];
 }
 
-- (void) openTicket {
+- (void) openTicketFunction {
     UIViewController *requestList = [ZDKRequestUi buildRequestUiWith:@[]];
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
-    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
+    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: requestList];
     [navControl pushViewController:requestList animated:YES];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
