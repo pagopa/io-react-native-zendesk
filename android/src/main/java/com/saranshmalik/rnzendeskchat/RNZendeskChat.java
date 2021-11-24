@@ -169,12 +169,13 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   public void openTicket(){
       Activity activity = getCurrentActivity();
 
+      List<CustomField> customFields = new ArrayList<>();
       // Custom Field for the category
-      CustomField customFieldOne = new CustomField(1900002821093L, "Cashback");
+      customFields.add(new CustomField(1900002821093L, "Cashback"));
 
       // Open a ticket
       RequestActivity.builder().
-        withCustomFields(Arrays.asList(customFieldOne)).show(activity);
+        withCustomFields(customFields).show(activity);
   }
 
   @ReactMethod
