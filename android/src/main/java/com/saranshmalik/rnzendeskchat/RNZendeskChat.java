@@ -172,7 +172,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
       // Open a ticket
       RequestActivity.builder().
-        withCustomFields(customFields).show(activity);
+        show(activity);
   }
 
   @ReactMethod
