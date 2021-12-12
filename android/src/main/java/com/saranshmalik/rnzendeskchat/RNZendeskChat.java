@@ -45,10 +45,13 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
+  // TODO: modify in dict of type {key: value}
+   private final List<CustomField> customFields;
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
     super(reactContext);
     appContext = reactContext;
+    customFields = new ArrayList<>();
   }
 
   @Override
@@ -167,12 +170,19 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void addTicketCustomField(String key, String value){
+    CustomField customField = new CustomField(Long.parseLong(key), value);
+    this.customFields.add(customField);
+  }
+
+  @ReactMethod
   public void openTicket(){
       Activity activity = getCurrentActivity();
 
       // Open a ticket
-      RequestActivity.builder().
-        show(activity);
+      RequestActivity.builder()
+          .withCustomFields(customFields)
+          .show(activity);
   }
 
   @ReactMethod
