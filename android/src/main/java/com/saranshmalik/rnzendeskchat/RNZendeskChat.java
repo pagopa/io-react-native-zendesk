@@ -46,7 +46,9 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
   // TODO: modify in dict of type {key: value}
-   private final List<CustomField> customFields;
+  private final List<CustomField> customFields;
+  // Contains the aggregate of all the logs sent by the app
+  private String log;
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -176,8 +178,21 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void appendLog(String log){
+    // TODO: check if log > than 63k characters
+    if(this.log != null){
+      this.log += "\n"+log;
+    }else{
+      this.log = log;
+    }
+  }
+
+  @ReactMethod
   public void openTicket(){
       Activity activity = getCurrentActivity();
+
+      // Add log custom field
+      customFields.add(new CustomField(4413278012049L, this.log));
 
       // Open a ticket
       RequestActivity.builder()
