@@ -15,6 +15,7 @@ import com.zendesk.logger.Logger;
 
 import java.lang.String;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import zendesk.chat.Chat;
@@ -45,15 +46,15 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
-  // TODO: modify in dict of type {key: value}
-  private final List<CustomField> customFields;
+  private final HashMap<String, CustomField> customFields;
   // Contains the aggregate of all the logs sent by the app
-  private String log;
+  private StringBuffer log;
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
     super(reactContext);
     appContext = reactContext;
-    customFields = new ArrayList<>();
+    customFields = new HashMap<>();
+    log = new StringBuffer();
   }
 
   @Override
@@ -174,29 +175,28 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   @ReactMethod
   public void addTicketCustomField(String key, String value){
     CustomField customField = new CustomField(Long.parseLong(key), value);
-    this.customFields.add(customField);
+    this.customFields.put(key, customField);
   }
 
   @ReactMethod
   public void appendLog(String log){
-    // TODO: check if log > than 63k characters
-    if(this.log != null){
-      this.log += "\n"+log;
-    }else{
-      this.log = log;
-    }
+    Integer logCapacity = 60000;
+
+    this.log.insert(0, "\n"+log);
+    this.log = new StringBuffer(this.log.substring(0, logCapacity));
   }
 
   @ReactMethod
   public void openTicket(){
-      Activity activity = getCurrentActivity();
+    Activity activity = getCurrentActivity();
 
       // Add log custom field
-      customFields.add(new CustomField(4413278012049L, this.log));
+    Long logId = 4413278012049L;
+    customFields.put(logId.toString(), new CustomField(logId, this.log.toString()));
 
       // Open a ticket
       RequestActivity.builder()
-          .withCustomFields(customFields)
+          .withCustomFields(new ArrayList(customFields.values()))
           .show(activity);
   }
 
