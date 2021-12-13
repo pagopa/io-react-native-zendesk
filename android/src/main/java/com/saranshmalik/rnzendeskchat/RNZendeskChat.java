@@ -183,7 +183,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     Integer logCapacity = 60000;
 
     this.log.insert(0, "\n"+log);
-    this.log = new StringBuffer(this.log.substring(0, logCapacity));
+    this.log = new StringBuffer(this.log.substring(0, Math.max(0, Math.min(this.log.length()-1, logCapacity))));
   }
 
   @ReactMethod
