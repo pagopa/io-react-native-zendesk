@@ -1,4 +1,3 @@
-
 #import "RNZendeskChat.h"
 #import <AnswerBotSDK/AnswerBotSDK.h>
 #import <MessagingSDK/MessagingSDK.h>
@@ -11,11 +10,8 @@
 #import <SupportSDK/SupportSDK.h>
 #import <SupportProvidersSDK/SupportProvidersSDK.h>
 #import <ZendeskCoreSDK/ZendeskCoreSDK.h>
-
 @implementation RNZendeskChat
-
 RCT_EXPORT_MODULE()
-
 RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
   ZDKChatAPIConfiguration *config = [[ZDKChatAPIConfiguration alloc] init];
   if (options[@"department"]) {
@@ -28,10 +24,8 @@ RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
                                                 email:options[@"email"]
                                                 phoneNumber:options[@"phone"]];
   ZDKChat.instance.configuration = config;
-
   NSLog(@"Setting visitor info: department: %@ tags: %@, email: %@, name: %@, phone: %@", config.department, config.tags, config.visitorInfo.email, config.visitorInfo.name, config.visitorInfo.phoneNumber);
 }
-
 RCT_EXPORT_METHOD(chatConfiguration: (NSDictionary *)options) {
     ZDKChatConfiguration *chatConfiguration = [[ZDKChatConfiguration alloc] init];
     if (options[@"chatMenuActions"]) {
@@ -50,15 +44,12 @@ RCT_EXPORT_METHOD(chatConfiguration: (NSDictionary *)options) {
         chatConfiguration.isAgentAvailabilityEnabled = options[@"isAgentAvailabilityEnabled"];
     }
 }
-
 RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
   [self setVisitorInfo:options];
-
   dispatch_sync(dispatch_get_main_queue(), ^{
     [self startChatFunction:options];
   });
 }
-
 RCT_EXPORT_METHOD(openTicket) {
   dispatch_sync(dispatch_get_main_queue(), ^{
     [self openTicketFunction];
@@ -69,14 +60,47 @@ RCT_EXPORT_METHOD(showTickets) {
     [self showTicketsFunction];
   });
 }
-
 RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
   [self setVisitorInfo:options];
   dispatch_sync(dispatch_get_main_queue(), ^{
     [self showHelpCenterFunction:options];
   });
 }
-
+NSMutableString* mutableLog;
+NSNumber* logId;
+NSMutableDictionary* customFields;
+#ifndef MAX_LOG_LENGTH
+#define MAX_LOG_LENGTH 60000
+#endif
+- (void) initGlobals
+{
+    if(mutableLog == nil){
+        mutableLog = [[NSMutableString alloc] init];
+    }
+    if(logId == nil){
+        logId = [NSNumber numberWithLong: 4413278012049];
+    }
+    if(customFields == nil){
+        customFields = [[NSMutableDictionary alloc] init];
+    }
+}
+RCT_EXPORT_METHOD(appendLog:(NSString *)log) {
+    [self initGlobals];
+    [mutableLog insertString:log atIndex:0];
+    [mutableLog substringToIndex:fmax(0,fmin(MAX_LOG_LENGTH,mutableLog.length - 1))];
+}
+- (void) addTicketCustomFieldFunction:(NSString *)key withValue:(NSString *)value
+{
+    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumber *customFieldID = [f numberFromString:key];
+    ZDKCustomField *customField = [[ZDKCustomField alloc] initWithFieldId:customFieldID value:value];
+    [customFields setObject:customField forKey:customFieldID];
+}
+RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)value) {
+    [self initGlobals];
+    [self addTicketCustomFieldFunction:key withValue:value];
+}
 RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
   if (user[@"token"]) {
     id<ZDKObjCIdentity> userIdentity = [[ZDKObjCJwt alloc] initWithToken:user[@"token"]];
@@ -87,7 +111,6 @@ RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
     [[ZDKZendesk instance] setIdentity:userIdentity];
   }
 }
-
 RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
   [ZDKZendesk initializeWithAppId:options[@"appId"]
       clientId: options[@"clientId"]
@@ -96,21 +119,17 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
   [ZDKChat initializeWithAccountKey:options[@"key"] appId:options[@"appId"] queue:dispatch_get_main_queue()];
   [ZDKAnswerBot initializeWithZendesk:[ZDKZendesk instance] support:[ZDKSupport instance]];
 }
-
 RCT_EXPORT_METHOD(initChat:(NSString *)key) {
   [ZDKChat initializeWithAccountKey:key queue:dispatch_get_main_queue()];
 }
-
 RCT_EXPORT_METHOD(setPrimaryColor:(NSString *)color) {
   [ZDKCommonTheme currentTheme].primaryColor = [self colorFromHexString:color];
 }
-
 RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
   dispatch_sync(dispatch_get_main_queue(), ^{
     [self registerForNotifications:deviceToken];
   });
 }
-
 - (UIColor *)colorFromHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
@@ -118,7 +137,6 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     [scanner scanHexInt:&rgbValue];
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
-
 - (void) showHelpCenterFunction:(NSDictionary *)options {
     NSError *error = nil;
     ZDKChatEngine *chatEngine = [ZDKChatEngine engineAndReturnError:&error];
@@ -152,9 +170,13 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
     [topController presentViewController:navControl animated:YES completion:nil];
 }
-
 - (void) openTicketFunction {
-    UIViewController *openTicketController = [ZDKRequestUi buildRequestUiWith:@[]];
+    [self initGlobals];
+    [self addTicketCustomFieldFunction:[logId stringValue] withValue:mutableLog];
+    ZDKRequestUiConfiguration * config = [ZDKRequestUiConfiguration new];
+    config.customFields = customFields.allValues;
+
+    UIViewController *openTicketController = [ZDKRequestUi buildRequestUiWith:@[config]];
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
@@ -162,7 +184,6 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: openTicketController];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
-
 - (void) showTicketsFunction {
     ZDKRequestListUiConfiguration * config = [ZDKRequestListUiConfiguration new];
     config.allowRequestCreation = false;
@@ -174,7 +195,6 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: showTicketsController];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
-
 - (void) startChatFunction:(NSDictionary *)options {
     ZDKMessagingConfiguration *messagingConfiguration = [[ZDKMessagingConfiguration alloc] init];
     NSString *botName = @"ChatBot";
@@ -185,7 +205,6 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     if (options[@"botImage"]) {
       messagingConfiguration.botAvatar = options[@"botImage"];
     }
-
     NSError *error = nil;
     NSMutableArray *engines = [[NSMutableArray alloc] init];
     if (options[@"chatOnly"]) {
@@ -212,16 +231,13 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
                                                                                        style: UIBarButtonItemStylePlain
                                                                                       target: self
                                                                                       action: @selector(chatClosedClicked)];
-
         UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
         while (topController.presentedViewController) {
             topController = topController.presentedViewController;
         }
-
         UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
         [topController presentViewController:navControl animated:YES completion:nil];
 }
-
 - (void) chatClosedClicked {
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topController.presentedViewController) {
@@ -229,9 +245,7 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     }
     [topController dismissViewControllerAnimated:TRUE completion:NULL];
 }
-
 - (void) registerForNotifications:(NSData *)deviceToken {
    [ZDKChat registerPushToken:deviceToken];
 }
-
 @end

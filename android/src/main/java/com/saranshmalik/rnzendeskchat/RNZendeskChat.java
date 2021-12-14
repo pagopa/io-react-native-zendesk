@@ -15,6 +15,7 @@ import com.zendesk.logger.Logger;
 
 import java.lang.String;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import zendesk.chat.Chat;
@@ -45,10 +46,15 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
+  private final HashMap<String, CustomField> customFields;
+  // Contains the aggregate of all the logs sent by the app
+  private StringBuffer log;
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
     super(reactContext);
     appContext = reactContext;
+    customFields = new HashMap<>();
+    log = new StringBuffer();
   }
 
   @Override
@@ -167,12 +173,31 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void addTicketCustomField(String key, String value){
+    CustomField customField = new CustomField(Long.parseLong(key), value);
+    this.customFields.put(key, customField);
+  }
+
+  @ReactMethod
+  public void appendLog(String log){
+    Integer logCapacity = 60000;
+
+    this.log.insert(0, "\n"+log);
+    this.log = new StringBuffer(this.log.substring(0, Math.max(0, Math.min(this.log.length()-1, logCapacity))));
+  }
+
+  @ReactMethod
   public void openTicket(){
-      Activity activity = getCurrentActivity();
+    Activity activity = getCurrentActivity();
+
+      // Add log custom field
+    Long logId = 4413278012049L;
+    customFields.put(logId.toString(), new CustomField(logId, this.log.toString()));
 
       // Open a ticket
-      RequestActivity.builder().
-        show(activity);
+      RequestActivity.builder()
+          .withCustomFields(new ArrayList(customFields.values()))
+          .show(activity);
   }
 
   @ReactMethod
