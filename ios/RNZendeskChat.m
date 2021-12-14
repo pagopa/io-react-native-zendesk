@@ -84,7 +84,7 @@ NSMutableDictionary* customFields;
 RCT_EXPORT_METHOD(appendLog:(NSString *)log) {
     [self initGlobals];
     [mutableLog insertString:log atIndex:0];
-    [mutableLog substringToIndex:fmax(0,fmin(MAX_LOG_LENGTH,mutableLog.length))];
+    [mutableLog substringToIndex:fmax(0,fmin(MAX_LOG_LENGTH,mutableLog.length - 1))];
 }
 - (void) addTicketCustomFieldFunction:(NSString *)key withValue:(NSString *)value
 {
