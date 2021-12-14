@@ -80,6 +80,9 @@ NSMutableDictionary* customFields;
     if(logId == nil){
         logId = [NSNumber numberWithLong: 4413278012049];
     }
+    if(customFields == nil){
+        customFields = [[NSMutableDictionary alloc] init];
+    }
 }
 RCT_EXPORT_METHOD(appendLog:(NSString *)log) {
     [self initGlobals];
@@ -88,9 +91,6 @@ RCT_EXPORT_METHOD(appendLog:(NSString *)log) {
 }
 - (void) addTicketCustomFieldFunction:(NSString *)key withValue:(NSString *)value
 {
-    if(customFields == nil){
-        customFields = [[NSMutableDictionary alloc] init];
-    }
     NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
     f.numberStyle = NSNumberFormatterDecimalStyle;
     NSNumber *customFieldID = [f numberFromString:key];
@@ -98,6 +98,7 @@ RCT_EXPORT_METHOD(appendLog:(NSString *)log) {
     [customFields setObject:customField forKey:customFieldID];
 }
 RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)value) {
+    [self initGlobals];
     [self addTicketCustomFieldFunction:key withValue:value];
 }
 RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
