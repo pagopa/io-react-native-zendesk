@@ -205,7 +205,9 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       Activity activity = getCurrentActivity();
 
       // Show the user's tickets
-      RequestListActivity.builder().show(activity);
+      RequestListActivity.builder()
+        .withContactUsButtonVisible(false)
+        .show(activity);
   }
 
   @ReactMethod

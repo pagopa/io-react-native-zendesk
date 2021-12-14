@@ -184,7 +184,9 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     [topController presentViewController:navControl animated:YES completion:nil];
   }
 - (void) showTicketsFunction {
-    UIViewController *showTicketsController = [ZDKRequestUi buildRequestListWith:@[]];
+    ZDKRequestListUiConfiguration * config = [ZDKRequestListUiConfiguration new];
+    config.allowRequestCreation = false;
+    UIViewController *showTicketsController = [ZDKRequestUi buildRequestListWith:@[config]];
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
