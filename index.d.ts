@@ -21,6 +21,9 @@ declare module 'io-react-native-zendesk' {
   // function to append a new line to the ticket log
   export function appendLog(log: string)
 
+  // remove log data and custom field
+  export function reset(): void;
+
   // function to open a ticket
   export function openTicket(): void;
 
