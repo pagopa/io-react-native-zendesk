@@ -57,6 +57,12 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     log = new StringBuffer();
   }
 
+  @ReactMethod
+  public void reset() {
+    log.delete(0, log.length());
+    customFields.clear();
+  }
+
   @Override
   public String getName() {
     return "RNZendeskChat";

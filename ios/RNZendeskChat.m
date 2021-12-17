@@ -72,6 +72,13 @@ NSMutableDictionary* customFields;
 #ifndef MAX_LOG_LENGTH
 #define MAX_LOG_LENGTH 60000
 #endif
+
+RCT_EXPORT_METHOD(reset) {
+    [self initGlobals];
+    [mutableLog setString:@""];
+    [customFields removeAllObjects];
+}
+
 - (void) initGlobals
 {
     if(mutableLog == nil){
