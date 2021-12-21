@@ -224,7 +224,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       @Override
       public void onError(ErrorResponse errorResponse) {
         // Handle error
-        promise.resolve(-1);
+        promise.reject(errorResponse.getReason());
       }
     });
   }
