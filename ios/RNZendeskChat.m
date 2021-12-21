@@ -143,11 +143,12 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
 {
     ZDKRequestProvider *provider = [ZDKRequestProvider new];
     [provider getAllRequestsWithCallback:^(ZDKRequestsWithCommentingAgents *requestsWithCommentingAgents, NSError *error) {
-        NSNumber *ticketsCount = [NSNumber numberWithInt:[requestsWithCommentingAgents requests].count];
-        resolve(@[ticketsCount]);
         if(error != nil){
             reject(@"event_failure", @"no response", nil);
+            return;
         }
+        NSNumber *ticketsCount = [NSNumber numberWithInt:[requestsWithCommentingAgents requests].count];
+        resolve(@[ticketsCount]);
     }];
 }
 
