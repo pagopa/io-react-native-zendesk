@@ -30,6 +30,9 @@ declare module 'io-react-native-zendesk' {
   // function to shows all the tickets of the user
   export function showTickets(): void;
 
+  // function the return true if a user has tickets false otherwise
+  export function hasOpenedTickets(): void;
+
   // function to set visitor info in chat
   export function setVisitorInfo(visitorInfo: UserInfo): void;
 
