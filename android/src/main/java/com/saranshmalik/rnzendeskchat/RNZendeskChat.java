@@ -6,12 +6,15 @@ import android.content.Context;
 
 import android.util.Log;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.zendesk.logger.Logger;
+import com.zendesk.service.ErrorResponse;
+import com.zendesk.service.ZendeskCallback;
 
 import java.lang.String;
 import java.util.ArrayList;
@@ -33,6 +36,8 @@ import zendesk.core.Identity;
 import zendesk.messaging.MessagingActivity;
 import zendesk.core.Zendesk;
 import zendesk.support.CustomField;
+import zendesk.support.Request;
+import zendesk.support.RequestProvider;
 import zendesk.support.Support;
 import zendesk.support.guide.HelpCenterActivity;
 import zendesk.support.guide.ViewArticleActivity;
@@ -49,6 +54,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   private final HashMap<String, CustomField> customFields;
   // Contains the aggregate of all the logs sent by the app
   private StringBuffer log;
+  private RequestProvider requestProvider;
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -207,13 +213,29 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void showTickets(){
-      Activity activity = getCurrentActivity();
+  public void hasOpenedTickets(final Promise promise){
+    requestProvider = Support.INSTANCE.provider().requestProvider();
+    requestProvider.getAllRequests(new ZendeskCallback<List<Request>>() {
+      @Override
+      public void onSuccess(List<Request> requests) {
+        // Handle success
+        promise.resolve(requests.size());
+      }
+      @Override
+      public void onError(ErrorResponse errorResponse) {
+        // Handle error
+        promise.reject(errorResponse.getReason());
+      }
+    });
+  }
 
-      // Show the user's tickets
-      RequestListActivity.builder()
-        .withContactUsButtonVisible(false)
-        .show(activity);
+  @ReactMethod
+  public void showTickets(){
+    Activity activity = getCurrentActivity();
+
+    // Show the user's tickets
+    RequestListActivity.builder()
+      .show(activity);
   }
 
   @ReactMethod
