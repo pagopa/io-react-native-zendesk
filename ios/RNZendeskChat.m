@@ -125,6 +125,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
   [ZDKSupport initializeWithZendesk: [ZDKZendesk instance]];
   [ZDKChat initializeWithAccountKey:options[@"key"] appId:options[@"appId"] queue:dispatch_get_main_queue()];
   [ZDKAnswerBot initializeWithZendesk:[ZDKZendesk instance] support:[ZDKSupport instance]];
+
 }
 RCT_EXPORT_METHOD(initChat:(NSString *)key) {
   [ZDKChat initializeWithAccountKey:key queue:dispatch_get_main_queue()];
@@ -137,6 +138,19 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     [self registerForNotifications:deviceToken];
   });
 }
+
+RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    ZDKRequestProvider *provider = [ZDKRequestProvider new];
+    [provider getAllRequestsWithCallback:^(ZDKRequestsWithCommentingAgents *requestsWithCommentingAgents, NSError *error) {
+        NSNumber *ticketsCount = [NSNumber numberWithInt:[requestsWithCommentingAgents requests].count];
+        resolve(@[ticketsCount]);
+        if(error != nil){
+            reject(@"event_failure", @"no response", nil);
+        }
+    }];
+}
+
 - (UIColor *)colorFromHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
