@@ -54,10 +54,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   private final HashMap<String, CustomField> customFields;
   // Contains the aggregate of all the logs sent by the app
   private StringBuffer log;
-  private Boolean hasTickets;
   private RequestProvider requestProvider;
-
-
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -222,14 +219,12 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       @Override
       public void onSuccess(List<Request> requests) {
         // Handle success
-        hasTickets = requests.size() > 0;
-        promise.resolve(hasTickets);
+        promise.resolve(requests.size());
       }
       @Override
       public void onError(ErrorResponse errorResponse) {
         // Handle error
-        hasTickets = false;
-        promise.resolve(hasTickets);
+        promise.resolve(-1);
       }
     });
   }
