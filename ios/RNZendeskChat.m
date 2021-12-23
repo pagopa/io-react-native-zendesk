@@ -85,7 +85,7 @@ RCT_EXPORT_METHOD(reset) {
         mutableLog = [[NSMutableString alloc] init];
     }
     if(logId == nil){
-        logId = [NSNumber numberWithLong: 4413278012049];
+        logId = [NSNumber numberWithLong: 4413845142673];
     }
     if(customFields == nil){
         customFields = [[NSMutableDictionary alloc] init];

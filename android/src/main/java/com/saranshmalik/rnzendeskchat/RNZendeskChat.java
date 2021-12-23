@@ -203,7 +203,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     Activity activity = getCurrentActivity();
 
       // Add log custom field
-    Long logId = 4413278012049L;
+    Long logId = 4413845142673L;
     customFields.put(logId.toString(), new CustomField(logId, this.log.toString()));
 
       // Open a ticket
