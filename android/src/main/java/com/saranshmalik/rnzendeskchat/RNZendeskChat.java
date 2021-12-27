@@ -54,6 +54,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   private final HashMap<String, CustomField> customFields;
   // Contains the aggregate of all the logs sent by the app
   private StringBuffer log;
+  private String logId;
   private RequestProvider requestProvider;
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
@@ -135,6 +136,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     String clientId = options.getString("clientId");
     String url = options.getString("url");
     String key = options.getString("key");
+    this.logId = options.getString("logId");
     Context context = appContext;
     Zendesk.INSTANCE.init(context, url, appId, clientId);
     Support.INSTANCE.init(Zendesk.INSTANCE);
@@ -172,10 +174,10 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       AnonymousIdentity.Builder builder = new AnonymousIdentity.Builder();
 
       if(name != null){
-          builder.withNameIdentifier(name);
+        builder.withNameIdentifier(name);
       }
       if(email != null){
-          builder.withEmailIdentifier(email);
+        builder.withEmailIdentifier(email);
       }
 
       Identity identity = builder.build();
@@ -202,14 +204,15 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   public void openTicket(){
     Activity activity = getCurrentActivity();
 
+    if(this.logId != null) {
       // Add log custom field
-    Long logId = 4413845142673L;
-    customFields.put(logId.toString(), new CustomField(logId, this.log.toString()));
+      customFields.put(this.logId, new CustomField(Long.parseLong(this.logId), this.log.toString()));
+    }
 
-      // Open a ticket
-      RequestActivity.builder()
-          .withCustomFields(new ArrayList(customFields.values()))
-          .show(activity);
+    // Open a ticket
+    RequestActivity.builder()
+      .withCustomFields(new ArrayList(customFields.values()))
+      .show(activity);
   }
 
   @ReactMethod
