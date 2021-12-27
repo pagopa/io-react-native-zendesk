@@ -67,7 +67,7 @@ RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
   });
 }
 NSMutableString* mutableLog;
-NSNumber* logId;
+NSString* logId;
 NSMutableDictionary* customFields;
 #ifndef MAX_LOG_LENGTH
 #define MAX_LOG_LENGTH 60000
@@ -83,9 +83,6 @@ RCT_EXPORT_METHOD(reset) {
 {
     if(mutableLog == nil){
         mutableLog = [[NSMutableString alloc] init];
-    }
-    if(logId == nil){
-        logId = [NSNumber numberWithLong: 4413845142673];
     }
     if(customFields == nil){
         customFields = [[NSMutableDictionary alloc] init];
@@ -125,6 +122,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
   [ZDKSupport initializeWithZendesk: [ZDKZendesk instance]];
   [ZDKChat initializeWithAccountKey:options[@"key"] appId:options[@"appId"] queue:dispatch_get_main_queue()];
   [ZDKAnswerBot initializeWithZendesk:[ZDKZendesk instance] support:[ZDKSupport instance]];
+  logId = options[@"logId"];
 
 }
 RCT_EXPORT_METHOD(initChat:(NSString *)key) {
@@ -194,7 +192,9 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
 }
 - (void) openTicketFunction {
     [self initGlobals];
-    [self addTicketCustomFieldFunction:[logId stringValue] withValue:mutableLog];
+    if(logId != nil){
+        [self addTicketCustomFieldFunction:logId  withValue:mutableLog];
+    }
     ZDKRequestUiConfiguration * config = [ZDKRequestUiConfiguration new];
     config.customFields = customFields.allValues;
 
