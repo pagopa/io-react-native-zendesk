@@ -66,6 +66,8 @@ declare module 'io-react-native-zendesk' {
     clientId: string,
     // support url of zendesk account
     url: string,
+    // id of the log custom field
+    logId: string
   }
 
   interface UserInfo extends AnonymousIdentity{
