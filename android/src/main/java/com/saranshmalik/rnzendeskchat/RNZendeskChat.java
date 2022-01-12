@@ -38,6 +38,7 @@ import zendesk.core.Zendesk;
 import zendesk.support.CustomField;
 import zendesk.support.Request;
 import zendesk.support.RequestProvider;
+import zendesk.support.RequestUpdates;
 import zendesk.support.Support;
 import zendesk.support.guide.HelpCenterActivity;
 import zendesk.support.guide.ViewArticleActivity;
@@ -227,6 +228,23 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       @Override
       public void onError(ErrorResponse errorResponse) {
         // Handle error
+        promise.reject(errorResponse.getReason());
+      }
+    });
+  }
+
+  @ReactMethod
+  public void hasNewResponse(final Promise promise){
+    requestProvider = Support.INSTANCE.provider().requestProvider();
+
+    requestProvider.getUpdatesForDevice(new ZendeskCallback<RequestUpdates>() {
+      @Override
+      public void onSuccess(RequestUpdates requestUpdates) {
+        promise.resolve(requestUpdates.hasUpdatedRequests());
+      }
+
+      @Override
+      public void onError(ErrorResponse errorResponse) {
         promise.reject(errorResponse.getReason());
       }
     });
