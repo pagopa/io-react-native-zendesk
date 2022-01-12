@@ -52,6 +52,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
   private final HashMap<String, CustomField> customFields;
+  private final ArrayList<String> tags;
   // Contains the aggregate of all the logs sent by the app
   private StringBuffer log;
   private String logId;
@@ -62,12 +63,14 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     appContext = reactContext;
     customFields = new HashMap<>();
     log = new StringBuffer();
+    tags = new ArrayList<>();
   }
 
   @ReactMethod
   public void reset() {
     log.delete(0, log.length());
     customFields.clear();
+    tags.clear();
   }
 
   @Override
@@ -193,6 +196,11 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void addTicketTag(String tag){
+    this.tags.add(tag.replace(' ', '_'));
+  }
+
+  @ReactMethod
   public void appendLog(String log){
     Integer logCapacity = 60000;
 
@@ -212,6 +220,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     // Open a ticket
     RequestActivity.builder()
       .withCustomFields(new ArrayList(customFields.values()))
+      .withTags(this.tags)
       .show(activity);
   }
 
