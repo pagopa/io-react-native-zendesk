@@ -129,7 +129,6 @@ RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)val
         [tags removeObjectAtIndex:0];
         i++;
     }
-    NSLog(@"%@",[tags componentsJoinedByString:@","]);
     
 }
 RCT_EXPORT_METHOD(addTicketTag:(NSString *)tag) {
