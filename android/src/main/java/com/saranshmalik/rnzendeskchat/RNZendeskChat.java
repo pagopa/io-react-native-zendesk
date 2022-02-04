@@ -240,7 +240,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     requestProvider.getUpdatesForDevice(new ZendeskCallback<RequestUpdates>() {
       @Override
       public void onSuccess(RequestUpdates requestUpdates) {
-        promise.resolve(requestUpdates.hasUpdatedRequests());
+        promise.resolve(requestUpdates.totalUpdates());
       }
 
       @Override
