@@ -73,6 +73,9 @@ NSMutableArray* tags;
 #ifndef MAX_LOG_LENGTH
 #define MAX_LOG_LENGTH 60000
 #endif
+#ifndef MAX_TAGS_LENGTH
+#define MAX_TAGS_LENGTH 100
+#endif
 
 RCT_EXPORT_METHOD(reset) {
     [self initGlobals];
@@ -115,7 +118,18 @@ RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)val
 {
     NSString * snakeTag = [tag stringByReplacingOccurrencesOfString:@" "
                                          withString:@"_"];
+    // avoid duplicates
+    if([tags containsObject:snakeTag]){
+        return;
+    }
     [tags addObject:snakeTag];
+    int elementsToRemove = (int)tags.count - MAX_TAGS_LENGTH;
+    int i = 0;
+    while(i < elementsToRemove){
+        [tags removeObjectAtIndex:0];
+        i++;
+    }
+    
 }
 RCT_EXPORT_METHOD(addTicketTag:(NSString *)tag) {
     [self initGlobals];
