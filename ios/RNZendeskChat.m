@@ -149,7 +149,19 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
         resolve(@[ticketsCount]);
     }];
 }
-
+RCT_EXPORT_METHOD(hasNewResponse:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    ZDKRequestProvider * provider = [ZDKRequestProvider new];
+        [provider getUpdatesForDeviceWithCallback:^(ZDKRequestUpdates * _Nullable requestUpdates) {
+            if (requestUpdates.hasUpdatedRequests) {
+                NSNumber *totalUpdates = [NSNumber numberWithInt:requestUpdates.totalUpdates];
+                resolve(totalUpdates);
+            } else {
+                // Since we cannot know if there is an error or if the user has not updates, resolve both cases with value 0
+                resolve(0);
+            }
+        }];
+}
 - (UIColor *)colorFromHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
