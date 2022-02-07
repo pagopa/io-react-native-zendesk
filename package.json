@@ -1,6 +1,6 @@
 {
   "name": "io-react-native-zendesk",
-  "version": "0.3.14",
+  "version": "0.3.16",
   "description": "React native wrapper for Zendesk Unified SDK",
   "main": "index.js",
   "scripts": {

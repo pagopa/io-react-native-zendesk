@@ -12,7 +12,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.zendesk.logger.Logger;
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
 
@@ -29,7 +28,6 @@ import zendesk.chat.ProfileProvider;
 import zendesk.chat.PushNotificationsProvider;
 import zendesk.chat.Providers;
 import zendesk.chat.VisitorInfo;
-import zendesk.configurations.Configuration;
 import zendesk.core.JwtIdentity;
 import zendesk.core.AnonymousIdentity;
 import zendesk.core.Identity;
@@ -52,7 +50,9 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
+  private static final int MAX_TAGS_SIZE = 100;
   private final HashMap<String, CustomField> customFields;
+  private final ArrayList<String> tags;
   // Contains the aggregate of all the logs sent by the app
   private StringBuffer log;
   private String logId;
@@ -63,12 +63,14 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     appContext = reactContext;
     customFields = new HashMap<>();
     log = new StringBuffer();
+    tags = new ArrayList<>();
   }
 
   @ReactMethod
   public void reset() {
     log.delete(0, log.length());
     customFields.clear();
+    tags.clear();
   }
 
   @Override
@@ -147,7 +149,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
   private void checkIdentity(){
     Identity identity = Zendesk.INSTANCE.getIdentity();
-    Log.v(TAG,"identity: " + identity != null ? "not null" : "null");
   }
 
   @ReactMethod
@@ -194,6 +195,24 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void addTicketTag(String tag){
+    tag = tag.replace(' ', '_');
+    // avoid duplicates
+    if(this.tags.contains(tag)){
+      return;
+    }
+    // append to tail
+    this.tags.add(tag);
+    int elementsToRemove = this.tags.size() - MAX_TAGS_SIZE;
+    int i = 0;
+    while(i < elementsToRemove){
+      // remove from head
+      this.tags.remove(0);
+      i++;
+    }
+  }
+
+  @ReactMethod
   public void appendLog(String log){
     Integer logCapacity = 60000;
 
@@ -213,6 +232,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     // Open a ticket
     RequestActivity.builder()
       .withCustomFields(new ArrayList(customFields.values()))
+      .withTags(this.tags)
       .show(activity);
   }
 

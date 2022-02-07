@@ -69,14 +69,19 @@ RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
 NSMutableString* mutableLog;
 NSString* logId;
 NSMutableDictionary* customFields;
+NSMutableArray* tags;
 #ifndef MAX_LOG_LENGTH
 #define MAX_LOG_LENGTH 60000
+#endif
+#ifndef MAX_TAGS_LENGTH
+#define MAX_TAGS_LENGTH 100
 #endif
 
 RCT_EXPORT_METHOD(reset) {
     [self initGlobals];
     [mutableLog setString:@""];
     [customFields removeAllObjects];
+    [tags removeAllObjects];
 }
 
 - (void) initGlobals
@@ -86,6 +91,9 @@ RCT_EXPORT_METHOD(reset) {
     }
     if(customFields == nil){
         customFields = [[NSMutableDictionary alloc] init];
+    }
+    if(tags == nil){
+        tags = [NSMutableArray array];
     }
 }
 RCT_EXPORT_METHOD(appendLog:(NSString *)log) {
@@ -104,6 +112,28 @@ RCT_EXPORT_METHOD(appendLog:(NSString *)log) {
 RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)value) {
     [self initGlobals];
     [self addTicketCustomFieldFunction:key withValue:value];
+}
+
+- (void) addTicketTagFunction:(NSString *)tag
+{
+    NSString * snakeTag = [tag stringByReplacingOccurrencesOfString:@" "
+                                         withString:@"_"];
+    // avoid duplicates
+    if([tags containsObject:snakeTag]){
+        return;
+    }
+    [tags addObject:snakeTag];
+    int elementsToRemove = (int)tags.count - MAX_TAGS_LENGTH;
+    int i = 0;
+    while(i < elementsToRemove){
+        [tags removeObjectAtIndex:0];
+        i++;
+    }
+    
+}
+RCT_EXPORT_METHOD(addTicketTag:(NSString *)tag) {
+    [self initGlobals];
+    [self addTicketTagFunction:tag];
 }
 RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
   if (user[@"token"]) {
@@ -202,8 +232,10 @@ RCT_EXPORT_METHOD(hasNewResponse:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
     if(logId != nil){
         [self addTicketCustomFieldFunction:logId  withValue:mutableLog];
     }
+
     ZDKRequestUiConfiguration * config = [ZDKRequestUiConfiguration new];
     config.customFields = customFields.allValues;
+    config.tags = tags;
 
     UIViewController *openTicketController = [ZDKRequestUi buildRequestUiWith:@[config]];
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
