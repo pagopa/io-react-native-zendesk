@@ -30,8 +30,11 @@ declare module 'io-react-native-zendesk' {
   // function to shows all the tickets of the user
   export function showTickets(): void;
 
-  // function the return the number of tickets created by the user
+  // function that return the number of tickets created by the user
   export function hasOpenedTickets(): Promise<number>;
+
+  // function that return the number of unread messages by the user
+  export function hasNewResponse(): Promise<number>;
 
   // function to set visitor info in chat
   export function setVisitorInfo(visitorInfo: UserInfo): void;
