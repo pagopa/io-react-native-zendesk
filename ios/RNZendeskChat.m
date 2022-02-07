@@ -70,11 +70,9 @@ NSMutableString* mutableLog;
 NSString* logId;
 NSMutableDictionary* customFields;
 NSMutableArray* tags;
+UIViewController *currentController;
 #ifndef MAX_LOG_LENGTH
 #define MAX_LOG_LENGTH 60000
-#endif
-#ifndef MAX_TAGS_LENGTH
-#define MAX_TAGS_LENGTH 100
 #endif
 
 RCT_EXPORT_METHOD(reset) {
@@ -118,18 +116,7 @@ RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)val
 {
     NSString * snakeTag = [tag stringByReplacingOccurrencesOfString:@" "
                                          withString:@"_"];
-    // avoid duplicates
-    if([tags containsObject:snakeTag]){
-        return;
-    }
     [tags addObject:snakeTag];
-    int elementsToRemove = (int)tags.count - MAX_TAGS_LENGTH;
-    int i = 0;
-    while(i < elementsToRemove){
-        [tags removeObjectAtIndex:0];
-        i++;
-    }
-    
 }
 RCT_EXPORT_METHOD(addTicketTag:(NSString *)tag) {
     [self initGlobals];
@@ -220,6 +207,19 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
     [topController presentViewController:navControl animated:YES completion:nil];
 }
+
+// dismiss the current controller shown, if any
+RCT_EXPORT_METHOD(dismiss) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        if(currentController != nil){
+            [currentController dismissViewControllerAnimated:TRUE completion:nil];
+        }
+        currentController = nil;
+      });
+}
+
+
+
 - (void) openTicketFunction {
     [self initGlobals];
     if(logId != nil){
@@ -235,9 +235,11 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
+    currentController = topController;
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: openTicketController];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
+
 - (void) showTicketsFunction {
     ZDKRequestListUiConfiguration * config = [ZDKRequestListUiConfiguration new];
     config.allowRequestCreation = false;
@@ -246,6 +248,7 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
+    currentController = topController;
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: showTicketsController];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
@@ -285,12 +288,14 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
                                                                                        style: UIBarButtonItemStylePlain
                                                                                       target: self
                                                                                       action: @selector(chatClosedClicked)];
-        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-        while (topController.presentedViewController) {
-            topController = topController.presentedViewController;
-        }
-        UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
-        [topController presentViewController:navControl animated:YES completion:nil];
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    currentController = topController;
+    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
+    [topController presentViewController:navControl animated:YES completion:nil];
+    
 }
 - (void) chatClosedClicked {
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
