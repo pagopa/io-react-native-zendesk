@@ -153,13 +153,8 @@ RCT_EXPORT_METHOD(hasNewResponse:(RCTPromiseResolveBlock)resolve rejecter:(RCTPr
 {
     ZDKRequestProvider * provider = [ZDKRequestProvider new];
         [provider getUpdatesForDeviceWithCallback:^(ZDKRequestUpdates * _Nullable requestUpdates) {
-            if (requestUpdates.hasUpdatedRequests) {
-                NSNumber *totalUpdates = [NSNumber numberWithInt:requestUpdates.totalUpdates];
-                resolve(totalUpdates);
-            } else {
-                // Since we cannot know if there is an error or if the user has not updates, resolve both cases with value 0
-                resolve(0);
-            }
+            NSNumber *totalUpdates = [NSNumber numberWithInt:requestUpdates.totalUpdates];
+            resolve(@[totalUpdates]);
         }];
 }
 - (UIColor *)colorFromHexString:(NSString *)hexString {
