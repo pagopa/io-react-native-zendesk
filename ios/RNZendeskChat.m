@@ -129,7 +129,7 @@ RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)val
         [tags removeObjectAtIndex:0];
         i++;
     }
-    
+
 }
 RCT_EXPORT_METHOD(addTicketTag:(NSString *)tag) {
     [self initGlobals];
@@ -179,7 +179,7 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
         resolve(@[ticketsCount]);
     }];
 }
-RCT_EXPORT_METHOD(hasNewResponse:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
     ZDKRequestProvider * provider = [ZDKRequestProvider new];
         [provider getUpdatesForDeviceWithCallback:^(ZDKRequestUpdates * _Nullable requestUpdates) {

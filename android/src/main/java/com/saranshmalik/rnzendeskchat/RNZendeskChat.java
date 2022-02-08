@@ -254,7 +254,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void hasNewResponse(final Promise promise){
+  public void getTotalNewResponses(final Promise promise){
     requestProvider = Support.INSTANCE.provider().requestProvider();
 
     requestProvider.getUpdatesForDevice(new ZendeskCallback<RequestUpdates>() {

@@ -37,7 +37,7 @@ declare module 'io-react-native-zendesk' {
   export function hasOpenedTickets(): Promise<number>;
 
   // function that return the number of unread messages by the user
-  export function hasNewResponse(): Promise<number>;
+  export function getTotalNewResponses(): Promise<number>;
 
   // function to set visitor info in chat
   export function setVisitorInfo(visitorInfo: UserInfo): void;
