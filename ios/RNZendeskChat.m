@@ -70,6 +70,7 @@ NSMutableString* mutableLog;
 NSString* logId;
 NSMutableDictionary* customFields;
 NSMutableArray* tags;
+UIViewController *currentController;
 #ifndef MAX_LOG_LENGTH
 #define MAX_LOG_LENGTH 60000
 #endif
@@ -82,6 +83,16 @@ RCT_EXPORT_METHOD(reset) {
     [mutableLog setString:@""];
     [customFields removeAllObjects];
     [tags removeAllObjects];
+}
+
+// dismiss the current controller shown, if any
+RCT_EXPORT_METHOD(dismiss) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        if(currentController != nil){
+            [currentController dismissViewControllerAnimated:TRUE completion:nil];
+        }
+        currentController = nil;
+      });
 }
 
 - (void) initGlobals
@@ -224,6 +235,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
+    currentController = topController;
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
     [topController presentViewController:navControl animated:YES completion:nil];
 }
@@ -242,6 +254,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
+    currentController = topController;
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: openTicketController];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
@@ -292,12 +305,13 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
                                                                                        style: UIBarButtonItemStylePlain
                                                                                       target: self
                                                                                       action: @selector(chatClosedClicked)];
-        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
-        while (topController.presentedViewController) {
-            topController = topController.presentedViewController;
-        }
-        UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
-        [topController presentViewController:navControl animated:YES completion:nil];
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+    currentController = topController;
+    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
+    [topController presentViewController:navControl animated:YES completion:nil];
 }
 - (void) chatClosedClicked {
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;

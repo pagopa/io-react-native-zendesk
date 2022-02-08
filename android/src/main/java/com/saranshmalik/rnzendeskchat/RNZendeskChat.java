@@ -154,7 +154,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   @ReactMethod
   public void resetUserIdentity() {
     Chat.INSTANCE.resetIdentity();
-    Log.v(TAG,"resetUserIdentity");
   }
 
   @ReactMethod
@@ -325,6 +324,12 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     }
 
   }
+
+  @ReactMethod
+  public void dismiss() {
+    // do nothing see 
+  }
+
 
   @ReactMethod
   public void setNotificationToken(String token) {
