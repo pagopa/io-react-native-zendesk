@@ -116,7 +116,18 @@ RCT_EXPORT_METHOD(addTicketCustomField:(NSString *)key withValue:(NSString *)val
 {
     NSString * snakeTag = [tag stringByReplacingOccurrencesOfString:@" "
                                          withString:@"_"];
+    // avoid duplicates
+    if([tags containsObject:snakeTag]){
+        return;
+    }
     [tags addObject:snakeTag];
+    int elementsToRemove = (int)tags.count - MAX_TAGS_LENGTH;
+    int i = 0;
+    while(i < elementsToRemove){
+        [tags removeObjectAtIndex:0];
+        i++;
+    }
+
 }
 RCT_EXPORT_METHOD(addTicketTag:(NSString *)tag) {
     [self initGlobals];
@@ -166,7 +177,14 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
         resolve(@[ticketsCount]);
     }];
 }
-
+RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+    ZDKRequestProvider * provider = [ZDKRequestProvider new];
+        [provider getUpdatesForDeviceWithCallback:^(ZDKRequestUpdates * _Nullable requestUpdates) {
+            NSNumber *totalUpdates = [NSNumber numberWithInt:requestUpdates.totalUpdates];
+            resolve(@[totalUpdates]);
+        }];
+}
 - (UIColor *)colorFromHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
