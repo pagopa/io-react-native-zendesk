@@ -27,7 +27,7 @@ declare module 'io-react-native-zendesk' {
   // remove log data and custom fields
   export function reset(): void;
 
-  // close the current zendesk view (ticket creation, tickets list) if any
+  // iOS only - close the current zendesk view (ticket creation, tickets list) if any
   export function dismiss(): void;
 
   // function to open a ticket
