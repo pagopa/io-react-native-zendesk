@@ -266,6 +266,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
+    currentController = topController;
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: showTicketsController];
     [topController presentViewController:navControl animated:YES completion:nil];
   }
