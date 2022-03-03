@@ -44,27 +44,42 @@ RCT_EXPORT_METHOD(chatConfiguration: (NSDictionary *)options) {
         chatConfiguration.isAgentAvailabilityEnabled = options[@"isAgentAvailabilityEnabled"];
     }
 }
+
+- (void)executeOnMainThread:(void (^)(void))block
+{
+    if ([NSThread isMainThread])
+    {
+        block();
+    }
+    else
+    {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            block();
+        });
+    }
+}
+
 RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
-  [self setVisitorInfo:options];
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [self startChatFunction:options];
-  });
+    [self setVisitorInfo:options];
+    [self executeOnMainThread:^{
+        [self startChatFunction:options];
+    }];
 }
 RCT_EXPORT_METHOD(openTicket) {
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [self openTicketFunction];
-  });
+    [self executeOnMainThread:^{
+        [self openTicketFunction];
+    }];
 }
 RCT_EXPORT_METHOD(showTickets) {
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [self showTicketsFunction];
-  });
+    [self executeOnMainThread:^{
+        [self showTicketsFunction];
+    }];
 }
 RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
-  [self setVisitorInfo:options];
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [self showHelpCenterFunction:options];
-  });
+    [self setVisitorInfo:options];
+    [self executeOnMainThread:^{
+        [self showHelpCenterFunction:options];
+    }];
 }
 NSMutableString* mutableLog;
 NSString* logId;
@@ -87,12 +102,12 @@ RCT_EXPORT_METHOD(reset) {
 
 // dismiss the current controller shown, if any
 RCT_EXPORT_METHOD(dismiss) {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        if(currentController != nil){
+    if(currentController != nil){
+        [self executeOnMainThread:^{
             [currentController dismissViewControllerAnimated:TRUE completion:nil];
-        }
-        currentController = nil;
-      });
+        }];
+    }
+    currentController = nil;
 }
 
 - (void) initGlobals
