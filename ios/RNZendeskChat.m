@@ -102,12 +102,12 @@ RCT_EXPORT_METHOD(reset) {
 
 // dismiss the current controller shown, if any
 RCT_EXPORT_METHOD(dismiss) {
-    if(currentController != nil){
-        [self executeOnMainThread:^{
+    [self executeOnMainThread:^{
+        if(currentController != nil){
             [currentController dismissViewControllerAnimated:TRUE completion:nil];
-        }];
-    }
-    currentController = nil;
+        }
+        currentController = nil;
+    }];
 }
 
 - (void) initGlobals
