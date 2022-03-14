@@ -275,6 +275,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
     // Show the user's tickets
     RequestListActivity.builder()
+      .withContactUsButtonVisible(false)
       .show(activity);
   }
 
