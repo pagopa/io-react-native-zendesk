@@ -93,11 +93,17 @@ UIViewController *currentController;
 #define MAX_TAGS_LENGTH 100
 #endif
 
-RCT_EXPORT_METHOD(reset) {
+RCT_EXPORT_METHOD(resetCustomFields) {
+    [self initGlobals];
+    [customFields removeAllObjects];
+}
+RCT_EXPORT_METHOD(resetTags) {
+    [self initGlobals];
+    [tags removeAllObjects];
+}
+RCT_EXPORT_METHOD(resetLog) {
     [self initGlobals];
     [mutableLog setString:@""];
-    [customFields removeAllObjects];
-    [tags removeAllObjects];
 }
 
 // dismiss the current controller shown, if any
