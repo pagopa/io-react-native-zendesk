@@ -24,8 +24,14 @@ declare module 'io-react-native-zendesk' {
   // add a new tag to the ticket
   export function addTicketTag(tag: string)
 
-  // remove log data and custom fields
-  export function reset(): void;
+  // remove custom fields
+  export function resetCustomFields(): void;
+
+  // remove tags
+  export function resetTags(): void;
+
+  // remove log data
+  export function resetLog(): void;
 
   // iOS only - close the current zendesk view (ticket creation, tickets list) if any
   export function dismiss(): void;

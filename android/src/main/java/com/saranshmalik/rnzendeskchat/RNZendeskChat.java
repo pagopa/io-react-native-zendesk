@@ -67,10 +67,18 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void reset() {
-    log.delete(0, log.length());
+  public void resetCustomFields() {
     customFields.clear();
+  }
+
+  @ReactMethod
+  public void resetTags() {
     tags.clear();
+  }
+
+  @ReactMethod
+  public void resetLog() {
+    log.delete(0, log.length());
   }
 
   @Override
