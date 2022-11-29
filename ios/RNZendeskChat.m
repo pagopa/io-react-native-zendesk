@@ -208,7 +208,7 @@ RCT_EXPORT_METHOD(hasOpenedTickets:(RCTPromiseResolveBlock)resolve rejecter:(RCT
             return;
         }
         NSNumber *ticketsCount = [NSNumber numberWithInt:[requestsWithCommentingAgents requests].count];
-        resolve(@[ticketsCount]);
+        resolve(@ticketsCount);
     }];
 }
 RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
@@ -216,7 +216,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     ZDKRequestProvider * provider = [ZDKRequestProvider new];
         [provider getUpdatesForDeviceWithCallback:^(ZDKRequestUpdates * _Nullable requestUpdates) {
             NSNumber *totalUpdates = [NSNumber numberWithInt:requestUpdates.totalUpdates];
-            resolve(@[totalUpdates]);
+            resolve(@totalUpdates);
         }];
 }
 - (UIColor *)colorFromHexString:(NSString *)hexString {
