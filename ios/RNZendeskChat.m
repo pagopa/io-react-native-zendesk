@@ -81,6 +81,11 @@ RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
         [self showHelpCenterFunction:options];
     }];
 }
+RCT_EXPORT_METHOD(showHelpCenterArticle:(NSString *)articleID) {
+    [self executeOnMainThread:^{
+        [self showHelpCenterArticleFunction:articleID];
+    }];
+}
 NSMutableString* mutableLog;
 NSString* logId;
 NSMutableDictionary* customFields;
@@ -259,6 +264,24 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     currentController = topController;
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
     [topController presentViewController:navControl animated:YES completion:nil];
+}
+- (void) showHelpCenterArticleFunction:(NSString*)articleID {
+   NSError *error = nil;
+
+   NSArray *engines = @[(id <ZDKEngine>) [ZDKChatEngine engineAndReturnError:&error]];
+
+   ZDKArticleUiConfiguration* articleUiConfig = [ZDKArticleUiConfiguration new];
+   articleUiConfig.objcEngines = engines;
+
+   UIViewController* controller = [ZDKHelpCenterUi buildHelpCenterArticleUiWithArticleId:articleID andConfigs:@[articleUiConfig]];
+
+   UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+   while (topController.presentedViewController) {
+       topController = topController.presentedViewController;
+   }
+
+   UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
+   [topController presentViewController:navControl animated:YES completion:nil];
 }
 - (void) openTicketFunction {
     [self initGlobals];
