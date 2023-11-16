@@ -65,9 +65,9 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
         [self startChatFunction:options];
     }];
 }
-RCT_EXPORT_METHOD(openTicket) {
+RCT_EXPORT_METHOD(openTicket:(RCTResponseSenderBlock)onClose) {
     [self executeOnMainThread:^{
-        [self openTicketFunction];
+        [self openTicketFunction:onClose];
     }];
 }
 RCT_EXPORT_METHOD(showTickets) {
@@ -260,7 +260,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
     [topController presentViewController:navControl animated:YES completion:nil];
 }
-- (void) openTicketFunction {
+- (void) openTicketFunction:(RCTResponseSenderBlock)onClose {
     [self initGlobals];
     if(logId != nil){
         [self addTicketCustomFieldFunction:logId  withValue:mutableLog];
@@ -276,7 +276,9 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
         topController = topController.presentedViewController;
     }
     currentController = topController;
-    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: openTicketController];
+    NavigationControllerWithCompletion *navControl = [[NavigationControllerWithCompletion alloc] initWithRootViewController: openTicketController];
+    navControl.completion = onClose;
+    
     [topController presentViewController:navControl animated:YES completion:nil];
   }
 - (void) showTicketsFunction {
@@ -345,4 +347,19 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
 - (void) registerForNotifications:(NSData *)deviceToken {
    [ZDKChat registerPushToken:deviceToken];
 }
+@end
+
+@interface NavigationControllerWithCompletion ()
+
+@end
+
+@implementation NavigationControllerWithCompletion
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    if (self.completion) {
+        self.completion(@[[NSNull null]]);
+    }
+}
+
 @end

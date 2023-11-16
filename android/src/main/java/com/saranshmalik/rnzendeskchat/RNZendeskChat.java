@@ -4,7 +4,12 @@ package com.saranshmalik.rnzendeskchat;
 import android.app.Activity;
 import android.content.Context;
 
+import android.content.Intent;
+
+import com.facebook.react.bridge.ActivityEventListener;
 import android.util.Log;
+import com.facebook.react.bridge.Callback;
+
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -46,7 +51,7 @@ import zendesk.support.SupportEngine;
 import zendesk.support.request.RequestActivity;
 import zendesk.support.requestlist.RequestListActivity;
 
-public class RNZendeskChat extends ReactContextBaseJavaModule {
+public class RNZendeskChat extends ReactContextBaseJavaModule implements ActivityEventListener {
 
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
@@ -64,6 +69,8 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     customFields = new HashMap<>();
     log = new StringBuffer();
     tags = new ArrayList<>();
+
+    reactContext.addActivityEventListener(this);
   }
 
   @ReactMethod
@@ -101,6 +108,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     return null;
   }
 
+  private final int INTENT_REQUEST_CODE = 100;
 
   @ReactMethod
   public void setVisitorInfo(ReadableMap options) {
@@ -226,10 +234,14 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     this.log.insert(0, "\n"+log);
     this.log = new StringBuffer(this.log.substring(0, Math.max(0, Math.min(this.log.length()-1, logCapacity))));
   }
+  
+  Callback onOpenTicketDismiss;
 
   @ReactMethod
-  public void openTicket(){
+  public void openTicket(Callback onClose){
     Activity activity = getCurrentActivity();
+
+    onOpenTicketDismiss = onClose;
 
     if(this.logId != null) {
       // Add log custom field
@@ -237,10 +249,25 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     }
 
     // Open a ticket
-    RequestActivity.builder()
+    Intent requestActivityIntent = RequestActivity.builder()
       .withCustomFields(new ArrayList(customFields.values()))
       .withTags(this.tags)
-      .show(activity);
+      .intent(activity);
+
+      activity.startActivityForResult(requestActivityIntent, INTENT_REQUEST_CODE);
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+
+    if (requestCode == INTENT_REQUEST_CODE) {
+      onOpenTicketDismiss.invoke();
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+
   }
 
   @ReactMethod
@@ -336,7 +363,8 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void dismiss() {
-    // do nothing see https://pagopa.atlassian.net/browse/IABT-1348?focusedCommentId=31396
+    Activity activity = getCurrentActivity();
+    activity.finishActivity(INTENT_REQUEST_CODE);
   }
 
 
