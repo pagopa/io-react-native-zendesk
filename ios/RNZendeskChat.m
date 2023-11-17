@@ -70,9 +70,9 @@ RCT_EXPORT_METHOD(openTicket:(RCTResponseSenderBlock)onClose) {
         [self openTicketFunction:onClose];
     }];
 }
-RCT_EXPORT_METHOD(showTickets) {
+RCT_EXPORT_METHOD(showTickets:(RCTResponseSenderBlock)onClose) {
     [self executeOnMainThread:^{
-        [self showTicketsFunction];
+        [self showTicketsFunction:onClose];
     }];
 }
 RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
@@ -281,7 +281,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     
     [topController presentViewController:navControl animated:YES completion:nil];
   }
-- (void) showTicketsFunction {
+- (void) showTicketsFunction:(RCTResponseSenderBlock)onClose {
     ZDKRequestListUiConfiguration * config = [ZDKRequestListUiConfiguration new];
     config.allowRequestCreation = false;
     UIViewController *showTicketsController = [ZDKRequestUi buildRequestListWith:@[config]];
@@ -290,7 +290,9 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
         topController = topController.presentedViewController;
     }
     currentController = topController;
-    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: showTicketsController];
+    NavigationControllerWithCompletion *navControl = [[NavigationControllerWithCompletion alloc] initWithRootViewController: showTicketsController];
+    navControl.completion = onClose;
+
     [topController presentViewController:navControl animated:YES completion:nil];
   }
 - (void) startChatFunction:(NSDictionary *)options {

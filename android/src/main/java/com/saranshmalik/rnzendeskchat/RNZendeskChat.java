@@ -257,19 +257,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
       activity.startActivityForResult(requestActivityIntent, INTENT_REQUEST_CODE);
   }
 
-  @Override
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-
-    if (requestCode == INTENT_REQUEST_CODE) {
-      onOpenTicketDismiss.invoke();
-    }
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-
-  }
-
   @ReactMethod
   public void hasOpenedTickets(final Promise promise){
     requestProvider = Support.INSTANCE.provider().requestProvider();
@@ -305,13 +292,16 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
   }
 
   @ReactMethod
-  public void showTickets(){
+  public void showTickets(Callback onClose){
     Activity activity = getCurrentActivity();
+    onOpenTicketDismiss = onClose;
 
     // Show the user's tickets
-    RequestListActivity.builder()
+    Intent requestActivityIntent = RequestListActivity.builder()
       .withContactUsButtonVisible(false)
-      .show(activity);
+      .intent(activity);
+
+      activity.startActivityForResult(requestActivityIntent, INTENT_REQUEST_CODE);
   }
 
   @ReactMethod
@@ -374,5 +364,18 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
     if (pushProvider != null) {
       pushProvider.registerPushToken(token);
     }
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+
+    if (requestCode == INTENT_REQUEST_CODE) {
+      onOpenTicketDismiss.invoke();
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+
   }
 }
