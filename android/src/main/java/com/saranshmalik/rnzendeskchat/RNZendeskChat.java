@@ -8,6 +8,9 @@ import android.content.Intent;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Callback;
 
 
@@ -63,6 +66,9 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
   private String logId;
   private RequestProvider requestProvider;
 
+  @Nullable
+  private Callback onOpenTicketDismiss;
+
   public RNZendeskChat(ReactApplicationContext reactContext) {
     super(reactContext);
     appContext = reactContext;
@@ -70,6 +76,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
     log = new StringBuffer();
     tags = new ArrayList<>();
 
+    onOpenTicketDismiss = null;
     reactContext.addActivityEventListener(this);
   }
 
@@ -234,8 +241,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
     this.log.insert(0, "\n"+log);
     this.log = new StringBuffer(this.log.substring(0, Math.max(0, Math.min(this.log.length()-1, logCapacity))));
   }
-  
-  Callback onOpenTicketDismiss;
 
   @ReactMethod
   public void openTicket(Callback onClose){
@@ -354,7 +359,9 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
   @ReactMethod
   public void dismiss() {
     Activity activity = getCurrentActivity();
-    activity.finishActivity(INTENT_REQUEST_CODE);
+    if (activity != null) {
+      activity.finishActivity(INTENT_REQUEST_CODE);  
+    }
   }
 
 
@@ -368,14 +375,14 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
 
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-
-    if (requestCode == INTENT_REQUEST_CODE) {
-      onOpenTicketDismiss.invoke();
+    if (requestCode == INTENT_REQUEST_CODE && onOpenTicketDismiss != null) {
+        onOpenTicketDismiss.invoke();
+        onOpenTicketDismiss = null;
     }
   }
 
   @Override
   public void onNewIntent(Intent intent) {
-
+    Log.d(TAG, "onNewIntent");
   }
 }

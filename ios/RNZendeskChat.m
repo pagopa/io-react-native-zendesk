@@ -10,6 +10,11 @@
 #import <SupportSDK/SupportSDK.h>
 #import <SupportProvidersSDK/SupportProvidersSDK.h>
 #import <ZendeskCoreSDK/ZendeskCoreSDK.h>
+
+@interface NavigationControllerWithCompletion : UINavigationController
+@property (nonatomic, copy, nullable) RCTResponseSenderBlock completion;
+@end
+
 @implementation RNZendeskChat
 RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
@@ -351,16 +356,13 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
 }
 @end
 
-@interface NavigationControllerWithCompletion ()
-
-@end
-
 @implementation NavigationControllerWithCompletion
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if (self.completion) {
         self.completion(@[[NSNull null]]);
+        self.completion = nil;
     }
 }
 
