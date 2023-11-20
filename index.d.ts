@@ -37,10 +37,10 @@ declare module 'io-react-native-zendesk' {
   export function dismiss(): void;
 
   // function to open a ticket
-  export function openTicket(): void;
+  export function openTicket(onClose: () => void): void;
 
   // function to shows all the tickets of the user
-  export function showTickets(): void;
+  export function showTickets(onClose: () => void): void;
 
   // function that return the number of tickets created by the user
   export function hasOpenedTickets(): Promise<number>;
