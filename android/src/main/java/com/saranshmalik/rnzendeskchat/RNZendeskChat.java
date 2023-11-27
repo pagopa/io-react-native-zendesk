@@ -310,6 +310,14 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void showHelpCenterArticle(String articleID){
+    Activity activity = getCurrentActivity();
+
+    ViewArticleActivity.builder(Long.parseLong(articleID))
+            .show(activity);
+  }
+
+  @ReactMethod
   public void startChat(ReadableMap options) {
     setVisitorInfo(options);
     String botName = getString(options,"botName");
