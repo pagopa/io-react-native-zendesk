@@ -22,6 +22,23 @@
   "homepage": "https://github.com/pagopa/io-react-native-zendesk.git",
   "author": "forked by PagoPA S.p.A - original author @Saranshmalik",
   "license": "MIT",
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}",
+      "changelog": "yarn auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+    },
+    "hooks": {
+      "after:bump": "yarn auto-changelog -p && git add ."
+    },
+    "npm": {
+      "publish": false
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {}
+  },
   "devDependencies": {
     "@release-it/conventional-changelog": "^5.0.0",
     "release-it": "^15.0.0"
