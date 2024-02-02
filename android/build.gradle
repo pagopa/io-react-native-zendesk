@@ -1,41 +1,92 @@
-
 buildscript {
-    repositories {
-        jcenter()
-    }
+  repositories {
+    google()
+    mavenCentral()
+    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+  }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.1'
-    }
+  dependencies {
+    classpath "com.android.tools.build:gradle:7.2.1"
+  }
 }
 
-apply plugin: 'com.android.library'
+def isNewArchitectureEnabled() {
+  return rootProject.hasProperty("newArchEnabled") && rootProject.getProperty("newArchEnabled") == "true"
+}
+
+apply plugin: "com.android.library"
+
+if (isNewArchitectureEnabled()) {
+  apply plugin: "com.facebook.react"
+}
+
+def getExtOrDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["ReactNativeZendesk_" + name]
+}
+
+def getExtOrIntegerDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["ReactNativeZendesk_" + name]).toInteger()
+}
+
+def supportsNamespace() {
+  def parsed = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')
+  def major = parsed[0].toInteger()
+  def minor = parsed[1].toInteger()
+
+  // Namespace support was added in 7.3.0
+  return (major == 7 && minor >= 3) || major >= 8
+}
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.1"
+  if (supportsNamespace()) {
+    namespace "com.pagopa.reactnativezendesk"
 
-    defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+    sourceSets {
+      main {
+        manifest.srcFile "src/main/AndroidManifestNew.xml"
+      }
     }
-    lintOptions {
-        abortOnError false
+  }
+
+  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+
+  defaultConfig {
+    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
     }
+  }
+
+  lintOptions {
+    disable "GradleCompatible"
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 
 repositories {
-    mavenCentral()
-    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+  mavenCentral()
+  google()
+  maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
 }
 
+
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
-    api group: 'com.zendesk', name: 'chat', version: '3.3.2'
-    api group: 'com.zendesk', name: 'answerbot', version: '3.0.4'
-    api group: 'com.zendesk', name: 'messaging', version: '5.2.2'
-    api group: 'com.zendesk', name: 'support', version: '5.0.5'
+  // For < 0.71, this will be from the local maven repo
+  // For > 0.71, this will be replaced by `com.facebook.react:react-android:$version` by react gradle plugin
+  //noinspection GradleDynamicVersion
+  implementation "com.facebook.react:react-native:+"
+  api group: 'com.zendesk', name: 'chat', version: '3.4.0'
+  api group: 'com.zendesk', name: 'answerbot', version: '3.2.0'
+  api group: 'com.zendesk', name: 'messaging', version: '5.4.0'
+  api group: 'com.zendesk', name: 'support', version: '5.2.0'
 }
 

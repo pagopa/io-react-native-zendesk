@@ -1,51 +1,158 @@
 {
   "name": "@pagopa/io-react-native-zendesk",
-  "version": "0.3.28",
-  "description": "React native wrapper for Zendesk Unified SDK",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "A react-native wrapper for Zendesk Unified SDK",
+  "main": "lib/commonjs/index",
+  "module": "lib/module/index",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index",
+  "source": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "cpp",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!android/gradle",
+    "!android/gradlew",
+    "!android/gradlew.bat",
+    "!android/local.properties",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "!**/.*"
+  ],
   "scripts": {
+    "test": "jest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "prepare": "bob build",
     "release": "release-it"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/pagopa/io-react-native-zendesk"
   },
   "keywords": [
     "react-native",
-    "zendesk",
-    "zendesk-chat",
-    "react-native-zendesk",
-    "zendesk-chat-v2",
-    "chat",
-    "zendesk unified sdkv2"
+    "ios",
+    "android"
   ],
-  "homepage": "https://github.com/pagopa/io-react-native-zendesk.git",
-  "author": "forked by PagoPA S.p.A - original author @Saranshmalik",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pagopa/pagopa-react-native-zendesk.git"
+  },
+  "author": "PagoPa Spa (https://github.com/pagopa)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pagopa/pagopa-react-native-zendesk/issues"
+  },
+  "homepage": "https://github.com/pagopa/pagopa-react-native-zendesk#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@react-native/eslint-config": "^0.72.2",
+    "@release-it/conventional-changelog": "^5.0.0",
+    "@types/jest": "^28.1.2",
+    "@types/react": "~17.0.21",
+    "@types/react-native": "0.70.0",
+    "del-cli": "^5.0.0",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^28.1.1",
+    "pod-install": "^0.1.0",
+    "prettier": "^2.0.5",
+    "react": "18.2.0",
+    "react-native": "0.73.3",
+    "react-native-builder-bob": "^0.20.0",
+    "release-it": "^15.0.0",
+    "turbo": "^1.10.7",
+    "typescript": "^5.0.2"
+  },
+  "resolutions": {
+    "@types/react": "17.0.21"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "packageManager": "yarn@3.6.1",
+  "engines": {
+    "node": ">= 18.0.0"
+  },
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/example/node_modules",
+      "<rootDir>/lib/"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "release-it": {
     "git": {
       "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}",
-      "changelog": "yarn auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
-    },
-    "hooks": {
-      "after:bump": "yarn auto-changelog -p && git add ."
+      "tagName": "v${version}"
     },
     "npm": {
-      "publish": false
+      "publish": true
     },
     "github": {
       "release": true
     },
-    "plugins": {}
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular"
+      }
+    }
   },
-  "devDependencies": {
-    "auto-changelog": "^2.4.0",
-    "@release-it/conventional-changelog": "^5.0.0",
-    "release-it": "^15.0.0"
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@react-native",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ]
+    }
   },
-  "peerDependencies": {
-    "react": "~18.0.0",
-    "react-native": "~0.69.5"
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      [
+        "typescript",
+        {
+          "project": "tsconfig.json"
+        }
+      ]
+    ]
   }
 }
