@@ -1,6 +1,6 @@
 {
   "name": "@pagopa/io-react-native-zendesk",
-  "version": "0.1.0",
+  "version": "0.3.28",
   "description": "A react-native wrapper for Zendesk Unified SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
