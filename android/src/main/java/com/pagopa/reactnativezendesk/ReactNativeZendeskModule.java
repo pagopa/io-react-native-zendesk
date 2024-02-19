@@ -1,10 +1,10 @@
-
-package com.saranshmalik.rnzendeskchat;
+package com.pagopa.reactnativezendesk;
 
 import android.app.Activity;
 import android.content.Context;
 
 import android.content.Intent;
+import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import android.util.Log;
@@ -13,12 +13,12 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Callback;
 
-
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.bridge.ReadableMap;
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
@@ -39,7 +39,7 @@ import zendesk.chat.VisitorInfo;
 import zendesk.core.JwtIdentity;
 import zendesk.core.AnonymousIdentity;
 import zendesk.core.Identity;
-import zendesk.messaging.MessagingActivity;
+import zendesk.classic.messaging.MessagingActivity;
 import zendesk.core.Zendesk;
 import zendesk.support.CustomField;
 import zendesk.support.Request;
@@ -54,8 +54,9 @@ import zendesk.support.SupportEngine;
 import zendesk.support.request.RequestActivity;
 import zendesk.support.requestlist.RequestListActivity;
 
-public class RNZendeskChat extends ReactContextBaseJavaModule implements ActivityEventListener {
-
+@ReactModule(name = ReactNativeZendeskModule.NAME)
+public class ReactNativeZendeskModule extends ReactContextBaseJavaModule implements ActivityEventListener {
+  public static final String NAME = "ReactNativeZendesk";
   private ReactContext appContext;
   private static final String TAG = "ZendeskChat";
   private static final int MAX_TAGS_SIZE = 100;
@@ -69,7 +70,9 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
   @Nullable
   private Callback onOpenTicketDismiss;
 
-  public RNZendeskChat(ReactApplicationContext reactContext) {
+
+
+  public ReactNativeZendeskModule(ReactApplicationContext reactContext) {
     super(reactContext);
     appContext = reactContext;
     customFields = new HashMap<>();
@@ -78,6 +81,12 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
 
     onOpenTicketDismiss = null;
     reactContext.addActivityEventListener(this);
+  }
+  
+  @Override
+  @NonNull
+  public String getName() {
+    return NAME;
   }
 
   @ReactMethod
@@ -93,11 +102,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
   @ReactMethod
   public void resetLog() {
     log.delete(0, log.length());
-  }
-
-  @Override
-  public String getName() {
-    return "RNZendeskChat";
   }
 
   /* helper methods */
@@ -116,45 +120,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
   }
 
   private final int INTENT_REQUEST_CODE = 100;
-
-  @ReactMethod
-  public void setVisitorInfo(ReadableMap options) {
-
-    Providers providers = Chat.INSTANCE.providers();
-    if (providers == null) {
-      Log.d(TAG, "Can't set visitor info, provider is null");
-      return;
-    }
-    ProfileProvider profileProvider = providers.profileProvider();
-    if (profileProvider == null) {
-      Log.d(TAG, "Profile provider is null");
-      return;
-    }
-    ChatProvider chatProvider = providers.chatProvider();
-    if (chatProvider == null) {
-      Log.d(TAG, "Chat provider is null");
-      return;
-    }
-    VisitorInfo.Builder builder = VisitorInfo.builder();
-    String name = getString(options,"name");
-    String email = getString(options,"email");
-    String phone = getString(options,"phone");
-    String department = getString(options,"department");
-    if (name != null) {
-      builder = builder.withName(name);
-    }
-    if (email != null) {
-      builder = builder.withEmail(email);
-    }
-    if (phone != null) {
-      builder = builder.withPhoneNumber(phone);
-    }
-    VisitorInfo visitorInfo = builder.build();
-    profileProvider.setVisitorInfo(visitorInfo, null);
-    if (department != null)
-      chatProvider.setDepartment(department, null);
-
-  }
 
   @ReactMethod
   public void init(ReadableMap options) {
@@ -307,53 +272,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule implements Activit
       .intent(activity);
 
       activity.startActivityForResult(requestActivityIntent, INTENT_REQUEST_CODE);
-  }
-
-  @ReactMethod
-  public void showHelpCenter(ReadableMap options) {
-    Activity activity = getCurrentActivity();
-    Boolean withChat = getBoolean(options,"withChat");
-    Boolean disableTicketCreation = getBoolean(options,"withChat");
-    if (withChat) {
-      HelpCenterActivity.builder()
-        .withEngines(ChatEngine.engine())
-        .show(activity);
-    } else if (disableTicketCreation) {
-      HelpCenterActivity.builder()
-        .withContactUsButtonVisible(false)
-        .withShowConversationsMenuButton(false)
-        .show(activity, ViewArticleActivity.builder()
-          .withContactUsButtonVisible(false)
-          .config());
-    } else {
-      HelpCenterActivity.builder()
-        .show(activity);
-    }
-  }
-
-  @ReactMethod
-  public void startChat(ReadableMap options) {
-    setVisitorInfo(options);
-    String botName = getString(options,"botName");
-    botName = botName == null ? "bot name" : botName;
-    ChatConfiguration chatConfiguration = ChatConfiguration.builder()
-      .withAgentAvailabilityEnabled(true)
-      .withOfflineFormEnabled(true)
-      .build();
-
-    Activity activity = getCurrentActivity();
-    if (options.hasKey("chatOnly")) {
-      MessagingActivity.builder()
-        .withBotLabelString(botName)
-        .withEngines(ChatEngine.engine(), SupportEngine.engine())
-        .show(activity, chatConfiguration);
-    } else {
-      MessagingActivity.builder()
-        .withBotLabelString(botName)
-        .withEngines(AnswerBotEngine.engine(), ChatEngine.engine(), SupportEngine.engine())
-        .show(activity, chatConfiguration);
-    }
-
   }
 
   @ReactMethod

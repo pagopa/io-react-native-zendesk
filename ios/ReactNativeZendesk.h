@@ -2,5 +2,5 @@
 #import <UIKit/UIKit.h>
 #import <React/RCTBridgeModule.h>
 
-@interface RNZendeskChat : NSObject<RCTBridgeModule>
+@interface ReactNativeZendesk : NSObject<RCTBridgeModule>
 @end
