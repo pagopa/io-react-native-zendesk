@@ -15,6 +15,8 @@
 @property (nonatomic, copy, nullable) RCTResponseSenderBlock completion;
 @end
 
+static UIUserInterfaceStyle _overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+
 @implementation ReactNativeZendesk
 RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(chatConfiguration: (NSDictionary *)options) {
@@ -172,6 +174,15 @@ RCT_EXPORT_METHOD(initChat:(NSString *)key) {
 RCT_EXPORT_METHOD(setPrimaryColor:(NSString *)color) {
   [ZDKCommonTheme currentTheme].primaryColor = [self colorFromHexString:color];
 }
+RCT_EXPORT_METHOD(setUserInterfaceStyle:(NSString *)style) {
+  if ([style isEqualToString:@"light"]) {
+    _overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+  } else if ([style isEqualToString:@"dark"]) {
+    _overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  } else {
+    _overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+  }
+}
 RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
   dispatch_sync(dispatch_get_main_queue(), ^{
     [self registerForNotifications:deviceToken];
@@ -234,6 +245,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     }
     currentController = topController;
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
+    navControl.overrideUserInterfaceStyle = _overrideUserInterfaceStyle;
     [topController presentViewController:navControl animated:YES completion:nil];
 }
 - (void) openTicketFunction:(RCTResponseSenderBlock)onClose {
@@ -254,7 +266,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     currentController = topController;
     NavigationControllerWithCompletion *navControl = [[NavigationControllerWithCompletion alloc] initWithRootViewController: openTicketController];
     navControl.completion = onClose;
-    
+    navControl.overrideUserInterfaceStyle = _overrideUserInterfaceStyle;
     [topController presentViewController:navControl animated:YES completion:nil];
   }
 - (void) showTicketsFunction:(RCTResponseSenderBlock)onClose {
@@ -268,7 +280,7 @@ RCT_EXPORT_METHOD(getTotalNewResponses:(RCTPromiseResolveBlock)resolve rejecter:
     currentController = topController;
     NavigationControllerWithCompletion *navControl = [[NavigationControllerWithCompletion alloc] initWithRootViewController: showTicketsController];
     navControl.completion = onClose;
-
+    navControl.overrideUserInterfaceStyle = _overrideUserInterfaceStyle;
     [topController presentViewController:navControl animated:YES completion:nil];
   }
 - (void) chatClosedClicked {
