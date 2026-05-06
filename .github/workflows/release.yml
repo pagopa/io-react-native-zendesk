@@ -19,6 +19,8 @@ jobs:
       - name: Install npm 11
         run: npm install -g npm@11.7.0
       - name: Install dependencies and build with builder bob
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
+      - name: Build the library
+        run: yarn prepare
       - name: Publish package on NPM 📦
         run: npm publish

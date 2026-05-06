@@ -40,17 +40,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pagopa/pagopa-react-native-zendesk.git"
+    "url": "git+https://github.com/pagopa/io-react-native-zendesk.git"
   },
   "author": "PagoPa Spa (https://github.com/pagopa)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pagopa/pagopa-react-native-zendesk/issues"
+    "url": "https://github.com/pagopa/io-react-native-zendesk/issues"
   },
-  "homepage": "https://github.com/pagopa/pagopa-react-native-zendesk#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
+  "homepage": "https://github.com/pagopa/io-react-native-zendesk#readme",
   "devDependencies": {
     "@react-native/eslint-config": "^0.72.2",
     "@release-it/conventional-changelog": "^5.0.0",
@@ -97,7 +94,11 @@
   "release-it": {
     "git": {
       "commitMessage": "chore: release ${version}",
-      "tagName": "v${version}"
+      "tagName": "v${version}",
+      "changelog": "yarn auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+    },
+    "hooks": {
+      "after:bump": "yarn auto-changelog -p && git add ."
     },
     "npm": {
       "publish": false
@@ -105,11 +106,7 @@
     "github": {
       "release": true
     },
-    "plugins": {
-      "@release-it/conventional-changelog": {
-        "preset": "angular"
-      }
-    }
+    "plugins": {}
   },
   "eslintConfig": {
     "root": true,
