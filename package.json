@@ -48,9 +48,6 @@
     "url": "https://github.com/pagopa/pagopa-react-native-zendesk/issues"
   },
   "homepage": "https://github.com/pagopa/pagopa-react-native-zendesk#readme",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
   "devDependencies": {
     "@react-native/eslint-config": "^0.72.2",
     "@release-it/conventional-changelog": "^5.0.0",
