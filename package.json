@@ -1,6 +1,6 @@
 {
   "name": "@pagopa/io-react-native-zendesk",
-  "version": "0.3.30",
+  "version": "0.3.32-3",
   "description": "A react-native wrapper for Zendesk Unified SDK",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -54,6 +54,7 @@
     "@types/jest": "^28.1.2",
     "@types/react": "~17.0.21",
     "@types/react-native": "0.70.0",
+    "auto-changelog": "^2.4.0",
     "del-cli": "^5.0.0",
     "eslint": "^8.4.1",
     "eslint-config-prettier": "^8.5.0",
