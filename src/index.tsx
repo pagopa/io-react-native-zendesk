@@ -78,6 +78,16 @@ export function setPrimaryColor(color: string): void {
   ReactNativeZendesk.setPrimaryColor(color);
 }
 
+// iOS only - force a specific user interface style on Zendesk views
+// "light" | "dark" | "system" (default: "system" - follows device setting)
+export function setUserInterfaceStyle(
+  style: 'light' | 'dark' | 'system'
+): void {
+  if (Platform.OS === 'ios') {
+    ReactNativeZendesk.setUserInterfaceStyle(style);
+  }
+}
+
 // function to display help center UI
 export function showHelpCenter(chatOptions: ChatOptions): void {
   ReactNativeZendesk.showHelpCenter(chatOptions);
@@ -162,6 +172,7 @@ class IoReactNativeZendesk {
   static init = init;
   static initChat = initChat;
   static setPrimaryColor = setPrimaryColor;
+  static setUserInterfaceStyle = setUserInterfaceStyle;
   static showHelpCenter = showHelpCenter;
   static addTicketCustomField = addTicketCustomField;
   static appendLog = appendLog;
